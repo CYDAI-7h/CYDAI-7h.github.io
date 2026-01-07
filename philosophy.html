@@ -872,6 +872,7 @@
         document.removeEventListener('click', play);
       };
       document.addEventListener('click', play, { once: true });
+      document.addEventListener('wheel', play, { once: true });
     }
   });
 
