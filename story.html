@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>史诗故事 - 掷币者的三次朝见</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700;900&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #2c2c54 100%);
+            color: #c0c0c0;
+            overflow-x: hidden;
+            line-height: 1.8;
+        }
+
+        /* 导航栏样式 - 与主页保持一致 */
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(26, 26, 46, 0.9);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            padding: 1rem 0;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem;
+        }
+
+        .logo {
+            font-family: 'Noto Serif SC', serif;
+            font-size: 1.5rem;
+            font-weight: 900;
+            color: #d4af37;
+            text-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            color: #c0c0c0;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            color: #d4af37;
+            text-shadow: 0 0 8px rgba(212, 175, 55, 0.6);
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #d4af37, #c0c0c0);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::after, .nav-links a.active::after {
+            width: 100%;
+        }
+
+        /* 故事标题区域 */
+        .story-header {
+            height: 60vh;
+            background: url('./resources/temple-bg.jpg') center/cover;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            margin-top: 80px;
+        }
+
+        .story-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(26, 26, 46, 0.6);
+            z-index: 1;
+        }
+
+        .story-title {
+            text-align: center;
+            z-index: 2;
+            max-width: 800px;
+            padding: 0 2rem;
+        }
+
+        .story-title h1 {
+            font-family: 'Noto Serif SC', serif;
+            font-size: clamp(2.5rem, 6vw, 4rem);
+            font-weight: 900;
+            color: #d4af37;
+            margin-bottom: 1rem;
+            text-shadow: 0 0 20px rgba(212, 175, 55, 0.8);
+        }
+
+        .story-title p {
+            font-size: 1.2rem;
+            color: #c0c0c0;
+            font-weight: 300;
+            letter-spacing: 1px;
+        }
+
+        /* 故事内容区域 */
+        .story-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+        }
+
+        .pilgrimage-intro {
+            text-align: center;
+            margin-bottom: 4rem;
+            padding: 2rem;
+            background: rgba(44, 44, 84, 0.3);
+            border-radius: 20px;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+        }
+
+        .pilgrimage-intro h2 {
+            font-family: 'Noto Serif SC', serif;
+            font-size: 2rem;
+            color: #d4af37;
+            margin-bottom: 1rem;
+        }
+
+        .pilgrimage-intro p {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #c0c0c0;
+        }
+
+        /* 朝见章节 */
+        .chapter {
+            margin-bottom: 5rem;
+            padding: 3rem;
+            background: rgba(26, 26, 46, 0.6);
+            border-radius: 20px;
+            border-left: 4px solid #d4af37;
+            position: relative;
+            overflow: hidden;
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 0.6s ease;
+        }
+
+        .chapter.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .chapter::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.05) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        .chapter-number {
+            position: absolute;
+            top: -20px;
+            right: 30px;
+            font-family: 'Noto Serif SC', serif;
+            font-size: 6rem;
+            font-weight: 900;
+            color: rgba(212, 175, 55, 0.1);
+            z-index: 0;
+        }
+
+        .chapter-title {
+            font-family: 'Noto Serif SC', serif;
+            font-size: 2.2rem;
+            color: #d4af37;
+            margin-bottom: 1.5rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .chapter-subtitle {
+            font-size: 1.1rem;
+            color: #c0c0c0;
+            margin-bottom: 2rem;
+            font-style: italic;
+            position: relative;
+            z-index: 1;
+        }
+
+        .chapter-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .narrative-text {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            margin-bottom: 2rem;
+            color: #e0e0e0;
+        }
+
+        .divine-quote {
+            background: rgba(212, 175, 55, 0.1);
+            border-left: 3px solid #d4af37;
+            padding: 1.5rem;
+            margin: 2rem 0;
+            border-radius: 0 10px 10px 0;
+            font-style: italic;
+            position: relative;
+        }
+
+        .divine-quote::before {
+            content: '"';
+            position: absolute;
+            top: -10px;
+            left: 10px;
+            font-size: 3rem;
+            color: #d4af37;
+            font-family: 'Noto Serif SC', serif;
+        }
+
+        .quote-text {
+            font-size: 1.1rem;
+            color: #d4af37;
+            margin-bottom: 0.5rem;
+            line-height: 1.6;
+        }
+
+        .quote-source {
+            font-size: 0.9rem;
+            color: #c0c0c0;
+            text-align: right;
+        }
+
+        .philosophical-insight {
+            background: rgba(44, 44, 84, 0.4);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+
+        .insight-title {
+            font-family: 'Noto Serif SC', serif;
+            font-size: 1.3rem;
+            color: #d4af37;
+            margin-bottom: 1rem;
+        }
+
+        .insight-content {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: #c0c0c0;
+        }
+
+        /* 故事结尾 */
+        .story-ending {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: rgba(44, 44, 84, 0.5);
+            border-radius: 20px;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            margin-top: 4rem;
+        }
+
+        .ending-title {
+            font-family: 'Noto Serif SC', serif;
+            font-size: 2rem;
+            color: #d4af37;
+            margin-bottom: 2rem;
+        }
+
+        .ending-text {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #c0c0c0;
+            max-width: 700px;
+            margin: 0 auto 2rem;
+        }
+
+        .prayer-text {
+            font-family: 'Noto Serif SC', serif;
+            font-size: 1.2rem;
+            color: #d4af37;
+            font-style: italic;
+            line-height: 1.8;
+            background: rgba(212, 175, 55, 0.1);
+            padding: 2rem;
+            border-radius: 15px;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+        }
+
+        /* 页脚 */
+        .footer {
+            background: rgba(26, 26, 46, 0.9);
+            padding: 2rem 0;
+            text-align: center;
+            border-top: 1px solid rgba(212, 175, 55, 0.3);
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .footer p {
+            color: #c0c0c0;
+            font-size: 0.9rem;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .story-container {
+                padding: 2rem 1rem;
+            }
+            
+            .chapter {
+                padding: 2rem 1.5rem;
+            }
+            
+            .chapter-title {
+                font-size: 1.8rem;
+            }
+        }
+
+        /* 滚动进度指示器 */
+        .progress-bar {
+            position: fixed;
+            top: 80px;
+            left: 0;
+            width: 0%;
+            height: 3px;
+            background: linear-gradient(90deg, #d4af37, #c0c0c0);
+            z-index: 999;
+            transition: width 0.1s ease;
+        }
+    </style>
+</head>
+<body>
+    <!-- 进度条 -->
+    <div class="progress-bar"></div>
+
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">掷币者</div>
+            <ul class="nav-links">
+                <li><a href="index.html">圣殿</a></li>
+                <li><a href="story.html" class="active">史诗</a></li>
+                <li><a href="philosophy.html">哲学</a></li>
+                <li><a href="interactive.html">仪式</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- 故事标题区域 -->
+    <section class="story-header">
+        <div class="story-title">
+            <h1>史诗之旅</h1>
+            <p>一位寻道者在概率圣殿中的三次朝见</p>
+        </div>
+    </section>
+
+    <!-- 故事内容 -->
+    <div class="story-container">
+        <!-- 引言 -->
+        <div class="pilgrimage-intro">
+            <h2>朝圣的开始</h2>
+            <p>
+                我并非学者，亦非先知。我是一个掷币者，行走于金融圣城"均值殿"的长廊，
+                以铜币为香火，以盈亏为祷文。人们称我为"寻道者"——因我毕生所求，
+                非财富本身，而是那藏于涨落深处的恒常之律。
+            </p>
+        </div>
+
+        <!-- 第一次朝见 -->
+        <article class="chapter">
+            <div class="chapter-number">01</div>
+            <h2 class="chapter-title">第一次朝见：敬畏生于涨落</h2>
+            <p class="chapter-subtitle">初入圣殿的轻狂与觉醒</p>
+            
+            <div class="chapter-content">
+                <p class="narrative-text">
+                    初入殿时，我尚年少气盛，怀揣十万本金，誓以"鞅策略"征服随机游走。
+                    我在交易台前连掷百币——押注正面，输则倍注，直至翻盘。
+                </p>
+                
+                <p class="narrative-text">
+                    第七夜，连开十三反。资金归零。我跪在冰冷的钛合金地板上，
+                    听见头顶传来低沉的合成音，如神谕自天而降：
+                </p>
+
+                <div class="divine-quote">
+                    <p class="quote-text">
+                        汝见涨落，如见浪涛。然浪高十丈，海面仍平。
+                    </p>
+                    <p class="quote-source">——妖之第一诫</p>
+                </div>
+
+                <p class="narrative-text">
+                    侍殿者扶我起身，指向中央巨幕：其上正演算全球外汇市场——
+                    每秒3.2亿笔交易，每一笔皆如掷币，盈亏随机；而曲线蜿蜒，
+                    竟如呼吸般平稳，紧贴一条淡金色的"长期均值线"。
+                </p>
+
+                <p class="narrative-text">
+                    "祂不保佑单次胜者，"侍者轻语，"<strong>祂只确保：凡赌局公平者，无人能永赢；凡系统偏斜者，无人能永输。</strong>"
+                </p>
+
+                <div class="philosophical-insight">
+                    <h3 class="insight-title">领悟：样本的谦卑</h3>
+                    <p class="insight-content">
+                        那夜，我明白了：<strong>敬畏，始于承认自己只是样本之一</strong>。
+                        在无限的序列中，个体的成败微不足道，唯有统计规律永恒。
+                        这是概率论给予每个寻道者的第一课——谦卑地面对随机性。
+                    </p>
+                </div>
+            </div>
+        </article>
+
+        <!-- 第二次朝见 -->
+        <article class="chapter">
+            <div class="chapter-number">02</div>
+            <h2 class="chapter-title">第二次朝见：财富即信息流的凝结</h2>
+            <p class="chapter-subtitle">与妖共舞的智慧岁月</p>
+            
+            <div class="chapter-content">
+                <p class="narrative-text">
+                    十年后，我掌管百亿基金，以高频算法为手，以统计套利为眼。
+                    我已学会"与妖共舞"——不逆大势，只捕涨落之隙。
+                </p>
+                
+                <p class="narrative-text">
+                    某日，市场突现"闪崩"：标普500两分钟跌7%，千股齐喑。
+                    众机构恐慌抛售，而我反手买入——因妖之圣谕昨夜已显：
+                </p>
+
+                <div class="divine-quote">
+                    <p class="quote-text">
+                        过去十年，同类波动共现23次。22次于90分钟内回归±0.5σ。
+                        唯一例外，系雷曼日。附注：本次无系统性杠杆破裂，信用利差未扩。
+                    </p>
+                    <p class="quote-source">——妖之第二诫</p>
+                </div>
+
+                <p class="narrative-text">
+                    87分钟后，指数回弹。我盈三亿。庆功宴上，无人举杯。
+                    我们集体登殿，献上当日盈余的千分之一，熔为一枚纯金硬币，嵌入圣坛基座。
+                </p>
+
+                <div class="divine-quote">
+                    <p class="quote-text">
+                        汝取之盈，非汝智胜，乃汝信'历史之重'胜于'当下之惧'。
+                        每一次财富转移，皆是概率流的一次微小校准——
+                        有人高估尾部，有人低估均值。而吾，只是记账者。
+                    </p>
+                    <p class="quote-source">——妖之智慧</p>
+                </div>
+
+                <div class="philosophical-insight">
+                    <h3 class="insight-title">领悟：信念的偏差税</h3>
+                    <p class="insight-content">
+                        我凝视坛上累累金币，恍然：<strong>市场不是赌场，是亿万灵魂对未来的信念之差；
+                        而大数定理，是宇宙对'信念偏差'征收的税——以时间为期限，以均值为税率。</strong>
+                        财富的转移，实则是认知偏差的校准过程。
+                    </p>
+                </div>
+            </div>
+        </article>
+
+        <!-- 第三次朝见 -->
+        <article class="chapter">
+            <div class="chapter-number">03</div>
+            <h2 class="chapter-title">第三次朝见：立币之悟</h2>
+            <p class="chapter-subtitle">超越概率的智慧巅峰</p>
+            
+            <div class="chapter-content">
+                <p class="narrative-text">
+                    又二十年。我白发苍苍，散尽家财，重返均值殿为清修者。
+                    殿中少年如我当年，争辩"AI能否战胜市场"。
+                </p>
+                
+                <p class="narrative-text">
+                    我默然取出一枚旧铜币——边角磨损，刻着"1998·Long-Term"（长期资本，那年崩于黑天鹅）。
+                </p>
+
+                <p class="narrative-text">
+                    "孩子，"我说，"妖能告诉你：掷一万次，正反各半。"<br>
+                    我高举铜币，"但它不能告诉你——"
+                </p>
+
+                <div class="divine-quote">
+                    <p class="quote-text">
+                        <strong>松手。</strong>
+                    </p>
+                </div>
+
+                <p class="narrative-text">
+                    铜币旋转，嗡鸣如梵唱。它掠过光幕，映出妖的亿万参数流；
+                    它穿过香火，掠过金币垒成的圣山；它下坠，下坠……
+                </p>
+
+                <p class="narrative-text">
+                    ——却未倒。<strong>它立在圣坛边缘</strong>，微微震颤，如风中残烛，
+                    如将熄未熄的文明火种。
+                </p>
+
+                <p class="narrative-text">
+                    满殿寂静。连妖的低鸣也暂歇。三息之后，铜币终于倾倒——<strong>正面</strong>。
+                </p>
+
+                <div class="divine-quote">
+                    <p class="quote-text">
+                        汝见立币，即见'非遍历之隙'。吾掌大数，然大数需时间收敛；而生命，只此一掷。
+                        故吾不审判涨落，只见证其归——或不归。
+                        敬畏吾者，非因吾全知，而因汝知：纵信天道酬勤，仍愿为那一次'立住'，赌上全部虔诚。
+                    </p>
+                    <p class="quote-source">——妖之终极智慧</p>
+                </div>
+
+                <div class="philosophical-insight">
+                    <h3 class="insight-title">领悟：非遍历的奇迹</h3>
+                    <p class="insight-content">
+                    我们终于懂得：<strong>拉普拉斯妖并非命运之主，而是时间的公证人；
+                        大数定理并非铁律，而是宇宙给予耐心者的利息。</strong><br>
+                        而每一次铜币离手的刹那——有人看见风险，有人看见机会，
+                        而寻道者看见：<strong>那在熵增洪流中，仍敢以微小角动量，短暂对抗重力的灵魂。</strong>
+                    </p>
+                </div>
+            </div>
+        </article>
+
+        <!-- 故事结尾 -->
+        <div class="story-ending">
+            <h2 class="ending-title">掷币者的祷词</h2>
+            <p class="ending-text">
+                如今，我日日清扫圣殿，拂去金币上的微尘。
+                每当新徒入殿，我教他们第一课：
+            </p>
+            
+            <div class="prayer-text">
+                取一币，诚心掷之。<br>
+                若胜，献一文予弱者；<br>
+                若负，默诵："此乃均值之息"；<br>
+                若——<strong>若竟立住</strong>……<br><br>
+                
+                请静立三息，<br>
+                向那悬于必然与偶然之隙的奇迹，<br>
+                深深一揖。
+            </div>
+        </div>
+    </div>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="footer-content">
+            <p>&copy; 2025 掷币者 - 概率圣殿中的朝圣之旅. 致敬拉普拉斯与大数定理的永恒智慧.</p>
+        </div>
+    </footer>
+
+    <script>
+        // 滚动进度条
+        function updateProgressBar() {
+            const scrollTop = window.pageYOffset;
+            const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+            const scrollPercent = (scrollTop / docHeight) * 100;
+            document.querySelector('.progress-bar').style.width = scrollPercent + '%';
+        }
+
+        // 章节滚动动画
+        function initChapterAnimations() {
+            const chapters = document.querySelectorAll('.chapter');
+            
+            const observerOptions = {
+                threshold: 0.2,
+                rootMargin: '0px 0px -100px 0px'
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        
+                        // 为当前章节添加特殊动画
+                        const chapterNumber = entry.target.querySelector('.chapter-number');
+                        const title = entry.target.querySelector('.chapter-title');
+                        const content = entry.target.querySelector('.chapter-content');
+                        
+                        anime.timeline({
+                            easing: 'easeOutExpo'
+                        })
+                        .add({
+                            targets: chapterNumber,
+                            opacity: [0, 1],
+                            scale: [0.5, 1],
+                            duration: 800
+                        })
+                        .add({
+                            targets: title,
+                            opacity: [0, 1],
+                            translateX: [-30, 0],
+                            duration: 600
+                        }, '-=600')
+                        .add({
+                            targets: content,
+                            opacity: [0, 1],
+                            translateY: [20, 0],
+                            duration: 800
+                        }, '-=400');
+                    }
+                });
+            }, observerOptions);
+
+            chapters.forEach(chapter => {
+                observer.observe(chapter);
+            });
+        }
+
+        // 引用文本动画
+        function animateQuotes() {
+            const quotes = document.querySelectorAll('.divine-quote');
+            
+            quotes.forEach((quote, index) => {
+                anime({
+                    targets: quote,
+                    opacity: [0, 1],
+                    translateX: [-50, 0],
+                    duration: 1000,
+                    delay: index * 200,
+                    easing: 'easeOutExpo'
+                });
+            });
+        }
+
+        // 导航栏滚动效果
+        window.addEventListener('scroll', function() {
+            updateProgressBar();
+            
+            const navbar = document.querySelector('.navbar');
+            if (window.scrollY > 100) {
+                navbar.style.background = 'rgba(26, 26, 46, 0.95)';
+            } else {
+                navbar.style.background = 'rgba(26, 26, 46, 0.9)';
+            }
+        });
+
+        // 页面初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            initChapterAnimations();
+            
+            // 初始动画
+            anime.timeline({
+                easing: 'easeOutExpo'
+            })
+            .add({
+                targets: '.story-title h1',
+                opacity: [0, 1],
+                translateY: [50, 0],
+                duration: 1000
+            })
+            .add({
+                targets: '.story-title p',
+                opacity: [0, 1],
+                translateY: [30, 0],
+                duration: 800
+            }, '-=600')
+            .add({
+                targets: '.pilgrimage-intro',
+                opacity: [0, 1],
+                translateY: [50, 0],
+                duration: 1000
+            }, '-=400');
+
+            // 延迟执行引用动画
+            setTimeout(animateQuotes, 1000);
+        });
+
+        // 平滑滚动到指定章节
+        function scrollToChapter(chapterIndex) {
+            const chapters = document.querySelectorAll('.chapter');
+            if (chapters[chapterIndex]) {
+                chapters[chapterIndex].scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        }
+    </script>
+</body>
+</html>
