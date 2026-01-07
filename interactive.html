@@ -1177,5 +1177,79 @@
     }));
   });
 </script>
+    <script>
+  // 初始化统计数据
+  let total = 0;
+  let heads = 0;
+  let tails = 0;
+  let maxHeadsStreak = 0;
+  let currentHeadsStreak = 0;
+  let standingCount = 0;
+
+  // 获取所有显示元素
+  const stats = {
+    total: document.getElementById('total'),
+    heads: document.getElementById('heads'),
+    tails: document.getElementById('tails'),
+    headsRate: document.getElementById('headsRate'),
+    maxHeads: document.getElementById('maxHeads'),
+    standing: document.getElementById('standing')
+  };
+
+  // 更新界面
+  function updateStats() {
+    stats.total.textContent = total;
+    stats.heads.textContent = heads;
+    stats.tails.textContent = tails;
+    stats.headsRate.textContent = total === 0 ? '0.000' : (heads / total).toFixed(3);
+    stats.maxHeads.textContent = maxHeadsStreak;
+    stats.standing.textContent = standingCount;
+  }
+
+  // 投掷一次
+  function tossCoin() {
+    const result = Math.random() < 0.5 ? 'heads' : 'tails';
+    const display = document.getElementById('result');
+    
+    if (result === 'heads') {
+      display.textContent = '正面！';
+      heads++;
+      currentHeadsStreak++;
+      if (currentHeadsStreak > maxHeadsStreak) {
+        maxHeadsStreak = currentHeadsStreak;
+      }
+    } else {
+      display.textContent = '反面！';
+      tails++;
+      currentHeadsStreak = 0;
+    }
+
+    total++;
+    updateStats();
+  }
+
+  // 自动投掷100次
+  function autoToss() {
+    for (let i = 0; i < 100; i++) {
+      setTimeout(tossCoin, i * 10); // 每次延迟10ms
+    }
+  }
+
+  // 重置统计
+  function resetStats() {
+    total = 0;
+    heads = 0;
+    tails = 0;
+    maxHeadsStreak = 0;
+    currentHeadsStreak = 0;
+    standingCount = 0;
+    updateStats();
+  }
+
+  // 绑定按钮事件
+  document.getElementById('toss').addEventListener('click', tossCoin);
+  document.getElementById('auto-toss').addEventListener('click', autoToss);
+  document.getElementById('reset').addEventListener('click', resetStats);
+</script>
 </body>
 </html>
