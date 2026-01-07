@@ -594,5 +594,50 @@
             }
         });
     </script>
+    <!-- 背景音频 -->
+<audio id="bg-music" loop>
+  <source src="resources/战胜几率：赌徒谬误与概率的真相.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+<!-- 音频开关按钮 -->
+<div style="
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1000;
+">
+  <button id="audio-toggle" style="
+    background: rgba(0,0,0,0.5);
+    color: white;
+    border: 1px solid #ccc;
+    border-radius: 20px;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    font-size: 18px;
+  ">🔊</button>
+</div>
+
+<script>
+  const audio = document.getElementById('bg-music');
+  const toggleBtn = document.getElementById('audio-toggle');
+
+  // 页面加载后尝试自动播放（需用户交互后才能真正播放）
+  window.addEventListener('click', () => {
+    audio.play().catch(e => console.log("Auto-play prevented:", e));
+  }, { once: true });
+
+  // 切换播放/暂停
+  toggleBtn.addEventListener('click', () => {
+    if (audio.paused) {
+      audio.play();
+      toggleBtn.textContent = '🔊';
+    } else {
+      audio.pause();
+      toggleBtn.textContent = '🔇';
+    }
+  });
+</script>
 </body>
 </html>
