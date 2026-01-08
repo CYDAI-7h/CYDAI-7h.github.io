@@ -352,12 +352,61 @@
             font-size: 0.9rem;
         }
 
+        /* 汉堡菜单样式 */
+        .hamburger {
+            display: none;
+            cursor: pointer;
+        }
+
+        .hamburger .bar {
+            width: 25px;
+            height: 3px;
+            background-color: #d4af37;
+            margin: 5px 0;
+            transition: 0.3s;
+            box-shadow: 0 0 5px rgba(212, 175, 55, 0.5);
+        }
+
         /* 响应式设计 */
         @media (max-width: 768px) {
-            .nav-links {
-                display: none;
+            .hamburger {
+                display: block;
             }
-            
+
+            .hamburger.active .bar:nth-child(1) {
+                transform: translateY(8px) rotate(45deg);
+            }
+
+            .hamburger.active .bar:nth-child(2) {
+                opacity: 0;
+            }
+
+            .hamburger.active .bar:nth-child(3) {
+                transform: translateY(-8px) rotate(-45deg);
+            }
+
+            .nav-links {
+                position: fixed;
+                left: -100%;
+                top: 70px;
+                gap: 0;
+                flex-direction: column;
+                background-color: rgba(26, 26, 46, 0.95);
+                backdrop-filter: blur(10px);
+                width: 100%;
+                text-align: center;
+                transition: 0.3s;
+                border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+            }
+
+            .nav-links.active {
+                left: 0;
+            }
+
+            .nav-links li {
+                margin: 1rem 0;
+            }
+
             .hero-content {
                 padding: 0 1rem;
             }
@@ -391,6 +440,11 @@
                 <li><a href="philosophy.html">哲学</a></li>
                 <li><a href="interactive.html">仪式</a></li>
             </ul>
+            <div class="hamburger">
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+            </div>
         </div>
     </nav>
 
@@ -696,6 +750,26 @@
       isMuted: audio.paused  // 保存静音状态
     }));
   });
+
+  // 汉堡菜单功能
+  const hamburger = document.querySelector('.hamburger');
+  const navLinks = document.querySelector('.nav-links');
+
+  if (hamburger && navLinks) {
+    hamburger.addEventListener('click', () => {
+      hamburger.classList.toggle('active');
+      navLinks.classList.toggle('active');
+    });
+
+    // 点击导航链接后关闭菜单
+    const navItems = navLinks.querySelectorAll('li');
+    navItems.forEach(item => {
+      item.addEventListener('click', () => {
+        hamburger.classList.remove('active');
+        navLinks.classList.remove('active');
+      });
+    });
+  }
 </script>
 </body>
 </html>
