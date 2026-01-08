@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://wanchiyixian.com/sitemap.xml

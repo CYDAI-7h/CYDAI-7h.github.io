@@ -3,7 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="掷币者 - 概率圣殿中的朝圣，探索概率世界的奥秘，了解赌徒谬误与概率的真相。">
+    <meta name="keywords" content="掷币者,概率,赌徒谬误,概率游戏,概率知识,数学,统计学">
+    <meta name="author" content="掷币者团队">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="掷币者 - 概率圣殿中的朝圣">
+    <meta property="og:description" content="掷币者 - 概率圣殿中的朝圣，探索概率世界的奥秘，了解赌徒谬误与概率的真相。">
+    <meta property="og:url" content="https://wanchiyixian.com/index.html">
+    <meta property="og:image" content="https://wanchiyixian.com/resources/og-image.jpg">
+    <meta property="og:site_name" content="掷币者">
     <title>掷币者 - 概率圣殿中的朝圣</title>
+    <!-- 结构化数据 -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "掷币者",
+      "description": "探索概率世界的奥秘，了解赌徒谬误与概率的真相。",
+      "url": "https://wanchiyixian.com/index.html",
+      "publisher": {
+        "@type": "Organization",
+        "name": "掷币者团队",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://wanchiyixian.com/resources/logo.png"
+        }
+      }
+    }
+    </script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700;900&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.min.js"></script>
@@ -623,11 +650,6 @@
   const audio = document.getElementById('bg-music');
   const toggleBtn = document.getElementById('audio-toggle');
 
-  // 页面加载后尝试自动播放（需用户交互后才能真正播放）
-  window.addEventListener('click', () => {
-    audio.play().catch(e => console.log("Auto-play prevented:", e));
-  }, { once: true });
-
   // 切换播放/暂停
   toggleBtn.addEventListener('click', () => {
     if (audio.paused) {
@@ -638,10 +660,8 @@
       toggleBtn.textContent = '🔇';
     }
   });
-</script>
-    <script>
+
   // 使用 localStorage 记录播放进度和状态
-  const audio = document.getElementById('bg-music');
   const key = 'bgMusicState';
 
   // 页面加载时恢复状态
@@ -650,22 +670,30 @@
     if (saved.currentTime) {
       audio.currentTime = saved.currentTime;
     }
-    if (saved.playing !== false) {
+    
+    // 恢复静音状态
+    if (saved.isMuted) {
+      audio.pause();
+      toggleBtn.textContent = '🔇';
+    } else if (saved.playing !== false) {
       // 尝试播放（需用户交互）
       const play = () => {
         audio.play().catch(e => console.log("Play blocked:", e));
         document.removeEventListener('click', play);
+        document.removeEventListener('wheel', play);
       };
       document.addEventListener('click', play, { once: true });
+      // 添加滚轮滚动时自动播放
       document.addEventListener('wheel', play, { once: true });
     }
   });
-
+  
   // 页面卸载前保存状态
   window.addEventListener('beforeunload', () => {
     localStorage.setItem(key, JSON.stringify({
       currentTime: audio.currentTime,
-      playing: !audio.paused
+      playing: !audio.paused,
+      isMuted: audio.paused  // 保存静音状态
     }));
   });
 </script>

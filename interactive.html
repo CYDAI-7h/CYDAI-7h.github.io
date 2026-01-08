@@ -3,7 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="掷币仪式 - 亲身体验概率的魅力，通过交互式体验探索概率世界，了解赌徒谬误与概率的真相。">
+    <meta name="keywords" content="掷币者,概率,赌徒谬误,概率游戏,交互式体验,概率模拟,统计学,概率知识">
+    <meta name="author" content="掷币者团队">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="掷币仪式 - 亲身体验概率的魅力">
+    <meta property="og:description" content="掷币仪式 - 亲身体验概率的魅力，通过交互式体验探索概率世界，了解赌徒谬误与概率的真相。">
+    <meta property="og:url" content="https://wanchiyixian.com/interactive.html">
+    <meta property="og:image" content="https://wanchiyixian.com/resources/og-image.jpg">
+    <meta property="og:site_name" content="掷币者">
     <title>掷币仪式 - 亲身体验概率的魅力</title>
+    <!-- 结构化数据 -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebPage",
+      "name": "掷币仪式 - 亲身体验概率的魅力",
+      "description": "掷币仪式 - 亲身体验概率的魅力，通过交互式体验探索概率世界，了解赌徒谬误与概率的真相。",
+      "publisher": {
+        "@type": "Organization",
+        "name": "掷币者团队",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://wanchiyixian.com/resources/logo.png"
+        }
+      },
+      "mainEntity": {
+        "@type": "EducationalContent",
+        "educationalLevel": "Beginner",
+        "learningResourceType": "Interactive Simulation",
+        "description": "通过交互式掷币模拟，学习概率知识，了解赌徒谬误。"
+      }
+    }
+    </script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700;900&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.18.0/matter.min.js"></script>
@@ -1162,9 +1194,42 @@
     <audio id="bg-music" loop>
   <source src="resources/战胜几率：赌徒谬误与概率的真相.mp3" type="audio/mpeg">
 </audio>
+
+<!-- 音频开关按钮 -->
+<div style="
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1000;
+">
+  <button id="audio-toggle" style="
+    background: rgba(0,0,0,0.5);
+    color: white;
+    border: 1px solid #ccc;
+    border-radius: 20px;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    font-size: 18px;
+  ">🔊</button>
+</div>
     <script>
-  // 使用 localStorage 记录播放进度和状态
+  // 音频开关按钮功能
   const audio = document.getElementById('bg-music');
+  const toggleBtn = document.getElementById('audio-toggle');
+
+  // 切换播放/暂停
+  toggleBtn.addEventListener('click', () => {
+    if (audio.paused) {
+      audio.play();
+      toggleBtn.textContent = '🔊';
+    } else {
+      audio.pause();
+      toggleBtn.textContent = '🔇';
+    }
+  });
+
+  // 使用 localStorage 记录播放进度和状态
   const key = 'bgMusicState';
 
   // 页面加载时恢复状态
@@ -1173,7 +1238,12 @@
     if (saved.currentTime) {
       audio.currentTime = saved.currentTime;
     }
-    if (saved.playing !== false) {
+    
+    // 恢复静音状态
+    if (saved.isMuted) {
+      audio.pause();
+      toggleBtn.textContent = '🔇';
+    } else if (saved.playing !== false) {
       // 尝试播放（需用户交互）
       const play = () => {
         audio.play().catch(e => console.log("Play blocked:", e));
@@ -1190,7 +1260,8 @@
   window.addEventListener('beforeunload', () => {
     localStorage.setItem(key, JSON.stringify({
       currentTime: audio.currentTime,
-      playing: !audio.paused
+      playing: !audio.paused,
+      isMuted: audio.paused  // 保存静音状态
     }));
   });
 </script>
